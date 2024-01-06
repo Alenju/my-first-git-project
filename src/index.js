@@ -1,57 +1,51 @@
-let weather = {
-  paris: {
-    temp: 19.7,
-    humidity: 80
-  },
-  tokyo: {
-    temp: 17.3,
-    humidity: 50
-  },
-  lisbon: {
-    temp: 30.2,
-    humidity: 20
-  },
-  "san francisco": {
-    temp: 20.9,
-    humidity: 100
-  },
-  oslo: {
-    temp: -5,
-    humidity: 20
+function displayTemperature(response) {
+  let temperatureElement = document.querySelector("#degree");
+  let temperature = Math.round(response.data.temperature.current);
+  let cityElement = document.querySelector("#current-city");
+  cityElement.innerHTML = response.data.city;
+  temperatureElement.innerHTML = temperature;
+}
+function search(event) {
+  event.preventDefault();
+  let searchInputElement = document.querySelector("#search-input");
+  let city = searchInputElement.value;
+  let apiKey = "bae2t0edbab1efo605dfbfb714b36727";
+  let apiUrl = `https://api.shecodes.io/weather/v1/current?query=${city}&key=${apiKey}&units=metric`;
+
+  axios.get(apiUrl).then(displayTemperature);
+}
+
+function formatDate(date) {
+  let minutes = date.getMinutes();
+  let hours = date.getHours();
+  let day = date.getDay();
+
+  if (minutes < 10) {
+    minutes = `0${minutes}`;
   }
-};
 
-// write your code here
-let city = prompt("Enter a city");
-city = city.toLowerCase();
+  if (hours < 10) {
+    hours = `0${hours}`;
+  }
 
-if (weather[city] !== undefined) {
-  let temperature = Math.round(weather[city].temp);
-  let humidity = Math.round(weather[city].humidity);
+  let days = [
+    "Sunday",
+    "Monday",
+    "Tuesday",
+    "Wednesday",
+    "Thursday",
+    "Friday",
+    "Saturday",
+  ];
 
-  alert(
-    "It is currently " +
-      temperature +
-      "°C (" +
-      convertCelsiusToFahrenheit(temperature) +
-      "°F) in " +
-      city +
-      " with a humidity of " +
-      humidity +
-      "%"
-  );
-} else {
-  alert(
-    "Sorry, we don't know the weather for this city. Try going to https://www.google.com/search?q=weather+" +
-      city
-  );
+  let formattedDay = days[day];
+  return `${formattedDay} ${hours}:${minutes}`;
 }
 
-function convertCelsiusToFahrenheit(celsius) {
-  return Math.round((celsius * 9) / 5 + 32);
-}
+let searchForm = document.querySelector("#search-form");
+searchForm.addEventListener("submit", search);
 
-function getWeatherPrompt() {
-  var userInput = prompt("Enter a city");
-  getWeather(userInput);
-}
+let currentDateELement = document.querySelector("#current-date");
+let currentDate = new Date();
+
+currentDateELement.innerHTML = formatDate(currentDate);
